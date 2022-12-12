@@ -18,4 +18,8 @@ module.exports = {
     },
 
     plugins: [require('@tailwindcss/forms')],
+
+    purge: [
+        './node_modules/@protonemedia/inertiajs-tables-laravel-query-builder/**/*.{js,vue}',
+    ]
 };
