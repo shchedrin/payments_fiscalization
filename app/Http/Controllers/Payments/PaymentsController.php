@@ -55,8 +55,13 @@ class PaymentsController extends Controller
             ->column('tender_source', 'Тендер в CC&B', searchable: true, sortable: true)
             ->column('tender_source_descr', 'Описание тендера', searchable: true, sortable: true)
             ->column('filen_name', 'Файл реестра', searchable: true, sortable: true)
-            ->column('pay_date', 'Дата платежа', searchable: true, sortable: true)
-            ->column('fiscal_flag', 'Загружен в ФНС', searchable: true, sortable: true);
+            ->column('pay_date', 'Дата платежа', sortable: true)
+            ->column('fiscal_flag', 'Загружен в ФНС', searchable: true, sortable: true)
+            ->selectFilter(key: 'tender_source', label: 'Тендер в CC&B', options: [
+                'ZPLAT_L' => 'Зенит ЛЭСК',
+                'VTB24_L' => 'ВТБ ЛЭСК',
+            ]);
+
         });
     }
 }
