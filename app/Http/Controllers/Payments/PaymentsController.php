@@ -33,8 +33,13 @@ class PaymentsController extends Controller
 
         $payments = QueryBuilder::for(Payments::class)
             ->defaultSort('pay_date')
-            ->allowedSorts(['tender_source_descr', 'filen_name', 'amount'])
-            ->allowedFilters(['tender_source_descr', 'filen_name', $globalSearch])
+            ->allowedSorts([
+                'id', 'pay_event_id', 'account', 'amount', 'tender_source', 'tender_source_descr', 'filen_name',
+                'pay_date', 'fiscal_flag'
+            ])
+            ->allowedFilters([
+                'id', 'pay_event_id', 'account', 'amount', 'tender_source', 'tender_source_descr', 'filen_name',
+                'pay_date', 'fiscal_flag', $globalSearch])
             ->paginate()
             ->withQueryString();
 
