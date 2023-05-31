@@ -14,7 +14,7 @@ ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update \
-    && apt-get install -y gnupg gosu curl ca-certificates zip unzip git supervisor sqlite3 libcap2-bin libpng-dev python2 \
+    && apt-get install -y wget gnupg gosu curl ca-certificates zip unzip git supervisor sqlite3 libcap2-bin libpng-dev python2 libaio1 libaio-dev alien \
     && mkdir -p ~/.gnupg \
     && chmod 600 ~/.gnupg \
     && echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf \
@@ -47,6 +47,13 @@ RUN apt-get update \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN cd /tmp && wget https://download.oracle.com/otn_software/linux/instantclient/217000/oracle-instantclient-basic-21.7.0.0.0-1.el8.x86_64.rpm \
+  && wget https://download.oracle.com/otn_software/linux/instantclient/217000/oracle-instantclient-devel-21.7.0.0.0-1.el8.x86_64.rpm \
+  && alien -i ./oracle-instantclient-basic-21.7.0.0.0-1.el8.x86_64.rpm \
+  && alien -i ./oracle-instantclient-devel-21.7.0.0.0-1.el8.x86_64.rpm \
+  && yes 'instantclient,/usr/lib/oracle/21/client64/lib' | pecl install oci8-3.2.1 \
+  && echo 'extension=oci8.so' > /etc/php/8.1/mods-available/oci8.ini && phpenmod oci8
 
 RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.1
 
