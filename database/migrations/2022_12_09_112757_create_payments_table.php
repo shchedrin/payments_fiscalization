@@ -16,17 +16,16 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->string('pay_event_id', 191);
-            $table->string('uid', 191);
-            $table->string('account', 191);
+            $table->string('account_id', 191);
             $table->decimal('amount', 12,2);
             $table->string('tender_source',191);
-            $table->string('tender_source_descr',191);
-            $table->string('filen_name',191);
-            $table->date('pay_date');
-            $table->boolean('fiscal_flag');
-            $table->string('fiscal_status', 191);
-            $table->timestamp('created_at', $precision = 0);
-            $table->timestamp('updated_at', $precision = 0);
+            $table->string('file_name',191);
+            $table->date('pay_date_oracle');
+            $table->date('create_date_oracle');
+            $table->boolean('fiscal_flag')->default(false);
+            $table->string('fiscal_status', 191)->nullable();
+            $table->timestamp('created_at', $precision = 0)->useCurrent();
+            $table->timestamp('updated_at', $precision = 0)->nullable()->useCurrentOnUpdate();
         });
     }
 

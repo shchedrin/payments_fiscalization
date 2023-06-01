@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Payments;
 
-use App\Models\Payments;
+use App\Models\Payment;
 use App\Http\Controllers\Controller;
 use Inertia\Inertia;
 use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
@@ -31,7 +31,7 @@ class PaymentsController extends Controller
             });
         });
 
-        $payments = QueryBuilder::for(Payments::class)
+        $payments = QueryBuilder::for(Payment::class)
             ->defaultSort('pay_date')
             ->allowedSorts([
                 'id', 'pay_event_id', 'account', 'amount', 'tender_source', 'tender_source_descr', 'filen_name',

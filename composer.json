@@ -15,7 +15,8 @@
         "protonemedia/inertiajs-tables-laravel-query-builder": "^2.0",
         "spatie/laravel-query-builder": "^5.1",
         "tightenco/ziggy": "^1.0",
-        "yajra/laravel-oci8": "^9.5"
+        "yajra/laravel-oci8": "^9.5",
+      "ext-pdo": "*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.12",
