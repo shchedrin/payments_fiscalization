@@ -26,7 +26,7 @@ class Payment extends Model
     protected $dates = [
         'created_at',
         'updated_at',
-        'pay_date',
+        'pay_date_oracle',
         'cre_dttm',
     ];
 }

@@ -32,14 +32,14 @@ class PaymentsController extends Controller
         });
 
         $payments = QueryBuilder::for(Payment::class)
-            ->defaultSort('pay_date')
+            ->defaultSort('pay_date_oracle')
             ->allowedSorts([
                 'id', 'pay_event_id', 'account', 'amount', 'tender_source', 'tender_source_descr', 'filen_name',
-                'pay_date', 'fiscal_flag'
+                'pay_date_oracle', 'fiscal_flag'
             ])
             ->allowedFilters([
                 'id', 'pay_event_id', 'account', 'amount', 'tender_source', 'tender_source_descr', 'filen_name',
-                'pay_date', 'fiscal_flag', $globalSearch])
+                'pay_date_oracle', 'fiscal_flag', $globalSearch])
             ->paginate()
             ->withQueryString();
 
@@ -55,7 +55,7 @@ class PaymentsController extends Controller
             ->column('tender_source', 'Тендер в CC&B', searchable: true, sortable: true)
             ->column('tender_source_descr', 'Описание тендера', searchable: true, sortable: true)
             ->column('filen_name', 'Файл реестра', searchable: true, sortable: true)
-            ->column('pay_date', 'Дата платежа', sortable: true)
+            ->column('pay_date_oracle', 'Дата платежа', sortable: true)
             ->column('fiscal_flag', 'Загружен в ФНС', searchable: true, sortable: true)
             ->selectFilter(key: 'tender_source', label: 'Тендер в CC&B', options: [
                 'ZPLAT_L' => 'Зенит ЛЭСК',
