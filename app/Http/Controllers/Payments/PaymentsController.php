@@ -59,7 +59,7 @@ class PaymentsController extends Controller
             ->column('fiscal_flag', 'Загружен в ФНС', searchable: true, sortable: true)
             ->selectFilter(key: 'tender_source', label: 'Тендер в CC&B', options: [
                 'ZPLAT_L' => 'Зенит ЛЭСК',
-                'VTB24_L' => 'ВТБ ЛЭСК',account
+                'VTB24_L' => 'ВТБ ЛЭСК',
             ]);
 
         });
