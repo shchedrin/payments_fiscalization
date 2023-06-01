@@ -34,11 +34,11 @@ class PaymentsController extends Controller
         $payments = QueryBuilder::for(Payment::class)
             ->defaultSort('pay_date_oracle')
             ->allowedSorts([
-                'id', 'pay_event_id', 'account', 'amount', 'tender_source', 'tender_source_descr', 'filen_name',
+                'id', 'pay_event_id', 'account_id', 'amount', 'tender_source', 'tender_source_descr', 'filen_name',
                 'pay_date_oracle', 'fiscal_flag'
             ])
             ->allowedFilters([
-                'id', 'pay_event_id', 'account', 'amount', 'tender_source', 'tender_source_descr', 'filen_name',
+                'id', 'pay_event_id', 'account_id', 'amount', 'tender_source', 'tender_source_descr', 'filen_name',
                 'pay_date_oracle', 'fiscal_flag', $globalSearch])
             ->paginate()
             ->withQueryString();
@@ -50,16 +50,16 @@ class PaymentsController extends Controller
 //            ->withGlobalSearch()
             ->column('id', 'ID', searchable: true, sortable: true)
             ->column('pay_event_id', 'Payment Event CC&B', searchable: true, sortable: true)
-            ->column('account', 'Лицевой счет', searchable: true, sortable: true)
+            ->column('account_id', 'Лицевой счет', searchable: true, sortable: true)
             ->column('amount', 'Сумма', searchable: true, sortable: true)
             ->column('tender_source', 'Тендер в CC&B', searchable: true, sortable: true)
             ->column('tender_source_descr', 'Описание тендера', searchable: true, sortable: true)
-            ->column('filen_name', 'Файл реестра', searchable: true, sortable: true)
+            ->column('file_name', 'Файл реестра', searchable: true, sortable: true)
             ->column('pay_date_oracle', 'Дата платежа', sortable: true)
             ->column('fiscal_flag', 'Загружен в ФНС', searchable: true, sortable: true)
             ->selectFilter(key: 'tender_source', label: 'Тендер в CC&B', options: [
                 'ZPLAT_L' => 'Зенит ЛЭСК',
-                'VTB24_L' => 'ВТБ ЛЭСК',
+                'VTB24_L' => 'ВТБ ЛЭСК',account
             ]);
 
         });
