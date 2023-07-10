@@ -39,7 +39,7 @@ class ImportFiscalPayments implements ShouldQueue
      */
     public function handle(): void
     {
-        $dateFrom = Carbon::yesterday()->format('d.m.Y');
+        $dateFrom = Carbon::now()->subDays(5)->format('d.m.Y');
         $dateTo = Carbon::now()->format('d.m.Y');
 
         $sql = "
@@ -103,15 +103,15 @@ class ImportFiscalPayments implements ShouldQueue
         $i = 0;
         while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
             $payment = Payment::firstOrCreate([
-                'pay_event_id' => $row['pay_event_id'],
+                'pay_event_id' => trim($row['pay_event_id']),
                 'operation_id' => Str::uuid()->toString(),
-                'account_id' => $row['acct_id'],
-                'amount' => $row['pay_amt'],
-                'tender_source' => $row['tndr_source_cd'],
-                'file_name' => $row['file_name'],
-                'cis_division' => $row['cis_division'],
-                'pay_date_oracle' => $row['pay_dt'],
-                'create_date_oracle' => $row['cre_dttm'],
+                'account_id' => trim($row['acct_id']),
+                'amount' => trim($row['pay_amt']),
+                'tender_source' => trim($row['tndr_source_cd']),
+                'file_name' => trim($row['file_name']),
+                'cis_division' => trim($row['cis_division']),
+                'pay_date_oracle' => trim($row['pay_dt']),
+                'create_date_oracle' => trim($row['cre_dttm']),
             ]);
             if ($payment->wasRecentlyCreated) {
                 /*
