@@ -22,6 +22,7 @@ class Payment extends Model
         'id',
         'pay_event_id',
         'operation_id',
+        'cis_division',
         'account_id',
         'amount',
         'tender_source',
