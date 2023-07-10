@@ -48,7 +48,7 @@ class ImportFiscalPayments implements ShouldQueue
        pe.cre_dttm,
        pay.acct_id,
        pay.pay_amt,
-       ac.CIS_DIVISION,
+       ac.cis_division,
        (select tc.tndr_source_cd
           from rusadm.ci_pay_tndr tn, rusadm.ci_tndr_ctl tc
          where tn.pay_event_id = pe.pay_event_id
