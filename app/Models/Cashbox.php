@@ -17,6 +17,8 @@ class Cashbox
     private $inn;
     private $apiKey;
 
+    private $companyName;
+
     public function __construct(string $company)
     {
         $apiKey = $inn = null;
@@ -24,13 +26,20 @@ class Cashbox
             case 'LESK':
                 $this->apiKey = env('RARUS_API_KEY_LESK');
                 $this->inn = env('RARUS_INN_LESK');
+                $this->companyName = env('RARUS_COMPANY_NAME_LESK');
+                break;
             case 'GESK':
-                $this->apiKey = env('RARUS_API_KEY_GESK');
-                $this->inn = env('RARUS_INN_GESK');
+                $this->apiKey = env('RARUS_API_KEY_NOVITEN');
+                $this->inn = env('RARUS_INN_NOVITEN');
+                $this->companyName = env('RARUS_COMPANY_NAME_NOVITEN');
+                break;
             case 'TEST':
                 $this->apiKey = env('RARUS_API_KEY_TEST');
                 $this->inn = env('RARUS_INN_TEST');
+                $this->companyName = env('RARUS_COMPANY_NAME_TEST');
+
         }
+
         $this->client = Http::withHeaders([
             'API-KEY' => $this->apiKey
         ])->acceptJson()->baseUrl(self::BASE_URL);
@@ -53,7 +62,13 @@ class Cashbox
             'id' => $payment->operation_id,
             'doc_type' => 'sale',
             'tax_system' => 'OSN',
-            'inn' => '6234117358',
+            'inn' => (string) $this->inn,
+            'email' => 'oblako@rarus.ru',
+            'payment_address' => '193.0.214.11',
+            'supplier_info' => [
+                'name' => (string) $this->companyName,
+                'inn' => (string) $this->inn
+            ],
             'items' => [
                 [
                     'name' => 'Электроэнергия',
@@ -66,7 +81,9 @@ class Cashbox
                     'sign_calculation_object' => 'commodity',
                 ]
             ],
-            'total' => floatval($payment->amount)
+            'total' => floatval($payment->amount),
+            'advance_payment' => 0,
+            'credit' => 0,
         ]);
         return $response->json();
     }

@@ -6,7 +6,6 @@ use App\Models\Payment;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -22,8 +21,6 @@ class ImportFiscalPayments implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 7200;
-    private DateTime $dateFrom;
-    private DateTime $dateTo;
 
     /**
      * Create a new job instance.
@@ -32,8 +29,7 @@ class ImportFiscalPayments implements ShouldQueue
      */
     public function __construct()
     {
-        $this->dateFrom = Carbon::createFromFormat('d.m.Y', '22.05.2023');
-        $this->dateTo = Carbon::createFromFormat('d.m.Y', '28.05.2023');
+
     }
 
     /**
@@ -41,9 +37,11 @@ class ImportFiscalPayments implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
-        $memoryStart = memory_get_usage();
+        $dateFrom = Carbon::yesterday()->format('d.m.Y');
+        $dateTo = Carbon::now()->format('d.m.Y');
+
         $sql = "
                 select pe.pay_event_id,
        pe.pay_dt,
@@ -68,8 +66,8 @@ class ImportFiscalPayments implements ShouldQueue
        rusadm.ci_acct_per         ap,
        rusadm.ci_per              p
  where pe.pay_event_id = pay.pay_event_id
-   and pe.pay_dt between to_date('" . $this->dateFrom->format('d.m.Y') . "', 'dd.mm.yyyy')
-                     and to_date('" . $this->dateTo->format('d.m.Y') . "', 'dd.mm.yyyy')
+   and pe.pay_dt between to_date('" . $dateFrom . "', 'dd.mm.yyyy')
+                     and to_date('" . $dateTo . "', 'dd.mm.yyyy')
    and ac.acct_id = pay.acct_id
    and ap.acct_id = ac.acct_id
    and ap.main_cust_sw = 'Y'
@@ -104,7 +102,7 @@ class ImportFiscalPayments implements ShouldQueue
         $query->execute();
         $i = 0;
         while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
-            DB::table('payments')->insertOrIgnore([
+            $payment = Payment::firstOrCreate([
                 'pay_event_id' => $row['pay_event_id'],
                 'operation_id' => Str::uuid()->toString(),
                 'account_id' => $row['acct_id'],
@@ -115,13 +113,18 @@ class ImportFiscalPayments implements ShouldQueue
                 'pay_date_oracle' => $row['pay_dt'],
                 'create_date_oracle' => $row['cre_dttm'],
             ]);
-            $payment = Payment::where('pay_event_id', $row['pay_event_id'])->first();
-            if ($payment) {
-                SendToKKT::dispatch($payment);
+            if ($payment->wasRecentlyCreated) {
+                /*
+                * Ставим в очередь на отправку
+                */
+                $payment = Payment::where('pay_event_id', $row['pay_event_id'])->first();
+                if ($payment) {
+                    SendToKKT::dispatch($payment);
+                }
+                $i++;
             }
-            $i++;
         }
-        print('Получено строк: ' . $i);
+        Log::channel('single')->info('Job success. ' . $i . ' rows worked');
     }
 
     /**
