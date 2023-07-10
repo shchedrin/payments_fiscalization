@@ -42,6 +42,7 @@ RUN apt-get update \
     && echo "deb [signed-by=/usr/share/keyrings/pgdg.gpg] http://apt.postgresql.org/pub/repos/apt jammy-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
     && apt-get update \
     && apt-get install -y yarn \
+    && apt-get install -y cron \
     && apt-get install -y mysql-client \
     && apt-get install -y postgresql-client-$POSTGRES_VERSION \
     && apt-get -y autoremove \
@@ -54,6 +55,10 @@ RUN cd /tmp && wget https://download.oracle.com/otn_software/linux/instantclient
   && alien -i ./oracle-instantclient-devel-21.7.0.0.0-1.el8.x86_64.rpm \
   && yes 'instantclient,/usr/lib/oracle/21/client64/lib' | pecl install oci8-3.2.1 \
   && echo 'extension=oci8.so' > /etc/php/8.1/mods-available/oci8.ini && phpenmod oci8
+
+COPY scheduler /etc/cron.d/scheduler
+RUN chmod 0644 /etc/cron.d/scheduler \
+    && crontab /etc/cron.d/scheduler
 
 RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.1
 

@@ -12,6 +12,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Log;
 use PDO;
 use Throwable;
 
@@ -42,13 +44,13 @@ class ImportFiscalPayments implements ShouldQueue
     public function handle()
     {
         $memoryStart = memory_get_usage();
-        try {
-            $sql = "
+        $sql = "
                 select pe.pay_event_id,
        pe.pay_dt,
        pe.cre_dttm,
        pay.acct_id,
        pay.pay_amt,
+       ac.CIS_DIVISION,
        (select tc.tndr_source_cd
           from rusadm.ci_pay_tndr tn, rusadm.ci_tndr_ctl tc
          where tn.pay_event_id = pe.pay_event_id
@@ -97,25 +99,36 @@ class ImportFiscalPayments implements ShouldQueue
            and ptc.char_type_cd = 'KASSA'
            and ptc.srch_char_val = 'KASSA')
             ";
-            $pdo = DB::connection('oracle')->getPDO();
-            $query = $pdo->prepare($sql);
-            $query->execute();
-            $i = 0;
-            while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
-                DB::table('payments')->insertOrIgnore([
-                    'pay_event_id' => $row['pay_event_id'],
-                    'account_id' => $row['acct_id'],
-                    'amount' => $row['pay_amt'],
-                    'tender_source' => $row['tndr_source_cd'],
-                    'file_name' => $row['file_name'],
-                    'pay_date_oracle' => $row['pay_dt'],
-                    'create_date_oracle' => $row['cre_dttm'],
-                ]);
-                $i++;
+        $pdo = DB::connection('oracle')->getPDO();
+        $query = $pdo->prepare($sql);
+        $query->execute();
+        $i = 0;
+        while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+            DB::table('payments')->insertOrIgnore([
+                'pay_event_id' => $row['pay_event_id'],
+                'operation_id' => Str::uuid()->toString(),
+                'account_id' => $row['acct_id'],
+                'amount' => $row['pay_amt'],
+                'tender_source' => $row['tndr_source_cd'],
+                'file_name' => $row['file_name'],
+                'cis_division' => $row['cis_division'],
+                'pay_date_oracle' => $row['pay_dt'],
+                'create_date_oracle' => $row['cre_dttm'],
+            ]);
+            $payment = Payment::where('pay_event_id', $row['pay_event_id'])->first();
+            if ($payment) {
+                SendToKKT::dispatch($payment);
             }
-            print('Получено строк: ' . $i);
-        } catch (Throwable $exception) {
-            dd($exception);
+            $i++;
         }
+        print('Получено строк: ' . $i);
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $exception): void
+    {
+        Log::channel('single')->error('Job Failed', ['exception' => $exception]);
     }
 }
