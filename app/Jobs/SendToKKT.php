@@ -15,6 +15,8 @@ class SendToKKT implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $timeout = 30;
+
     protected $payment;
 
     /**
