@@ -63,7 +63,7 @@ class Cashbox
             'doc_type' => 'sale',
             'tax_system' => 'OSN',
             'inn' => (string) $this->inn,
-            'email' => 'oblako@rarus.ru',
+            'email' => 'receipt@lesk.ru',
             'payment_address' => '193.0.214.11',
             'supplier_info' => [
                 'name' => (string) $this->companyName,
