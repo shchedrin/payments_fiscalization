@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Jobs\CheckPaymentStatus;
 use App\Jobs\ImportFiscalPayments;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -18,6 +19,7 @@ class Kernel extends ConsoleKernel
     {
         if (config('app.env') == 'production') {
             $schedule->job(new ImportFiscalPayments)->daily();
+            $schedule->job(new CheckPaymentStatus())->hourly();
         }
     }
 

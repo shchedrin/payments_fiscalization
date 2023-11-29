@@ -37,28 +37,31 @@ class CheckPaymentStatus implements ShouldQueue
      */
     public function handle()
     {
-        $cashbox = new Cashbox($this->payment->cis_division);
-        $response = $cashbox->checkStatus($this->payment);
+        $payments = Payment::where('fiscal_flag', false)
+            ->where('created_at', '>=', Carbon::now()->subHours(1)->toDateTimeString())->get();
 
-        if ($response->ok()) {
-            $status = $response->json();
+        foreach($payments as $payment) {
+            $cashbox = new Cashbox($this->payment->cis_division);
+            $response = $cashbox->checkStatus($this->payment);
 
-            if ($status['operation']['status'] == 'complete') {
-                $fiscalization = $status['fiscalization'];
+            if ($response->ok()) {
+                $status = $response->json();
 
-                $this->payment->fiscal_flag = true;
+                if ($status['operation']['status'] == 'complete') {
+                    $fiscalization = $status['fiscalization'];
 
-                $this->payment->fiscal_number = $fiscalization['fiscal_number'];
-                $this->payment->shift_fiscal_number = $fiscalization['shift_fiscal_number'];
-                $this->payment->receipt_date = Carbon::createFromTimestampUTC(
-                    $fiscalization['receipt_date']
-                )->setTimezone('Europe/Moscow');
-                $this->payment->fn_number = $fiscalization['fn_number'];
-                $this->payment->kkt_registration_number = $fiscalization['kkt_registration_number'];
-                $this->payment->fiscal_attribute = $fiscalization['fiscal_attribute'];
-                $this->payment->fiscal_doc_number = $fiscalization['fiscal_doc_number'];
+                    $this->payment->fiscal_flag = true;
 
-                $this->payment->save();
+                    $this->payment->fiscal_number = $fiscalization['fiscal_number'];
+                    $this->payment->shift_fiscal_number = $fiscalization['shift_fiscal_number'];
+                    $payment->receipt_date = Carbon::createFromTimestampUTC($fiscalization['receipt_date'])->format('Y-m-d H:i:s');
+                    $this->payment->fn_number = $fiscalization['fn_number'];
+                    $this->payment->kkt_registration_number = $fiscalization['kkt_registration_number'];
+                    $this->payment->fiscal_attribute = $fiscalization['fiscal_attribute'];
+                    $this->payment->fiscal_doc_number = $fiscalization['fiscal_doc_number'];
+
+                    $this->payment->save();
+                }
             }
         }
     }
