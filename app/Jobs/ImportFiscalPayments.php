@@ -6,12 +6,13 @@ use App\Models\Payment;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Log;
 use PDO;
 use Throwable;
 
@@ -20,8 +21,6 @@ class ImportFiscalPayments implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 7200;
-    private DateTime $dateFrom;
-    private DateTime $dateTo;
 
     /**
      * Create a new job instance.
@@ -30,8 +29,7 @@ class ImportFiscalPayments implements ShouldQueue
      */
     public function __construct()
     {
-        $this->dateFrom = Carbon::createFromFormat('d.m.Y', '22.05.2023');
-        $this->dateTo = Carbon::createFromFormat('d.m.Y', '28.05.2023');
+
     }
 
     /**
@@ -39,16 +37,18 @@ class ImportFiscalPayments implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
-        $memoryStart = memory_get_usage();
-        try {
-            $sql = "
+        $dateFrom = Carbon::now()->subDays(5)->format('d.m.Y');
+        $dateTo = Carbon::now()->format('d.m.Y');
+
+        $sql = "
                 select pe.pay_event_id,
        pe.pay_dt,
        pe.cre_dttm,
        pay.acct_id,
        pay.pay_amt,
+       ac.cis_division,
        (select tc.tndr_source_cd
           from rusadm.ci_pay_tndr tn, rusadm.ci_tndr_ctl tc
          where tn.pay_event_id = pe.pay_event_id
@@ -66,8 +66,8 @@ class ImportFiscalPayments implements ShouldQueue
        rusadm.ci_acct_per         ap,
        rusadm.ci_per              p
  where pe.pay_event_id = pay.pay_event_id
-   and pe.pay_dt between to_date('" . $this->dateFrom->format('d.m.Y') . "', 'dd.mm.yyyy')
-                     and to_date('" . $this->dateTo->format('d.m.Y') . "', 'dd.mm.yyyy')
+   and pe.pay_dt between to_date('" . $dateFrom . "', 'dd.mm.yyyy')
+                     and to_date('" . $dateTo . "', 'dd.mm.yyyy')
    and ac.acct_id = pay.acct_id
    and ap.acct_id = ac.acct_id
    and ap.main_cust_sw = 'Y'
@@ -97,25 +97,41 @@ class ImportFiscalPayments implements ShouldQueue
            and ptc.char_type_cd = 'KASSA'
            and ptc.srch_char_val = 'KASSA')
             ";
-            $pdo = DB::connection('oracle')->getPDO();
-            $query = $pdo->prepare($sql);
-            $query->execute();
-            $i = 0;
-            while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
-                DB::table('payments')->insertOrIgnore([
-                    'pay_event_id' => $row['pay_event_id'],
-                    'account_id' => $row['acct_id'],
-                    'amount' => $row['pay_amt'],
-                    'tender_source' => $row['tndr_source_cd'],
-                    'file_name' => $row['file_name'],
-                    'pay_date_oracle' => $row['pay_dt'],
-                    'create_date_oracle' => $row['cre_dttm'],
-                ]);
+        $pdo = DB::connection('oracle')->getPDO();
+        $query = $pdo->prepare($sql);
+        $query->execute();
+        $i = 0;
+        while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+            $payment = Payment::firstOrCreate([
+                'pay_event_id' => trim($row['pay_event_id']),
+                'operation_id' => Str::uuid()->toString(),
+                'account_id' => trim($row['acct_id']),
+                'amount' => trim($row['pay_amt']),
+                'tender_source' => trim($row['tndr_source_cd']),
+                'file_name' => trim($row['file_name']),
+                'cis_division' => trim($row['cis_division']),
+                'pay_date_oracle' => trim($row['pay_dt']),
+                'create_date_oracle' => trim($row['cre_dttm']),
+            ]);
+            if ($payment->wasRecentlyCreated) {
+                /*
+                * Ставим в очередь на отправку
+                */
+                $payment = Payment::where('pay_event_id', $row['pay_event_id'])->first();
+                if ($payment) {
+                    SendToKKT::dispatch($payment);
+                }
                 $i++;
             }
-            print('Получено строк: ' . $i);
-        } catch (Throwable $exception) {
-            dd($exception);
         }
+        Log::channel('single')->info('Job success. ' . $i . ' rows worked');
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $exception): void
+    {
+        Log::channel('single')->error('Job Failed', ['exception' => $exception]);
     }
 }

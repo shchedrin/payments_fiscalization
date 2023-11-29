@@ -7,10 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
+    protected $pay_event_id;
+    protected $amount;
+    protected $cis_division;
+
+    /**
+     * @var
+     * Номер операции в кассе
+     */
+    protected $operation_id;
+
     protected $table = 'payments';
     protected $fillable = [
         'id',
         'pay_event_id',
+        'operation_id',
+        'cis_division',
         'account_id',
         'amount',
         'tender_source',
@@ -29,4 +41,20 @@ class Payment extends Model
         'pay_date_oracle',
         'cre_dttm',
     ];
+
+    /**
+     * @return mixed
+     */
+    public function getOperationId()
+    {
+        return $this->operation_id;
+    }
+
+    /**
+     * @param mixed $operation_id
+     */
+    public function setOperationId($operation_id): void
+    {
+        $this->operation_id = $operation_id;
+    }
 }

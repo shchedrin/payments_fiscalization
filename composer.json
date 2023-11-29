@@ -6,17 +6,18 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
+        "ext-pdo": "*",
         "guzzlehttp/guzzle": "^7.2",
         "inertiajs/inertia-laravel": "^0.6.3",
         "laravel/framework": "^9.19",
-        "laravel/horizon": "^5.16",
+        "laravel/horizon": "^5.17",
         "laravel/sanctum": "^2.8",
         "laravel/tinker": "^2.7",
+        "predis/predis": "^2.2",
         "protonemedia/inertiajs-tables-laravel-query-builder": "^2.0",
         "spatie/laravel-query-builder": "^5.1",
         "tightenco/ziggy": "^1.0",
-        "yajra/laravel-oci8": "^9.5",
-      "ext-pdo": "*"
+        "yajra/laravel-oci8": "^9.5"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.12",
