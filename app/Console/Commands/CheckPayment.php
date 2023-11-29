@@ -46,9 +46,7 @@ class CheckPayment extends Command
 
                 $payment->fiscal_number = $fiscalization['fiscal_number'];
                 $payment->shift_fiscal_number = $fiscalization['shift_fiscal_number'];
-                $payment->receipt_date = Carbon::createFromTimestampUTC(
-                    $fiscalization['receipt_date']
-                )->setTimezone('Europe/Moscow')->format('Y-m-d H:i:s');
+                $payment->receipt_date = Carbon::createFromTimestampUTC($fiscalization['receipt_date'])->format('Y-m-d H:i:s');
                 $payment->fn_number = $fiscalization['fn_number'];
                 $payment->kkt_registration_number = $fiscalization['kkt_registration_number'];
                 $payment->fiscal_attribute = $fiscalization['fiscal_attribute'];

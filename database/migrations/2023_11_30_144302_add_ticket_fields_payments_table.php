@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('fiscal_number')->nullable();
             $table->string('shift_fiscal_number')->nullable();
             $table->datetime('receipt_date')->nullable();
-            $table->datetime('fn_number')->nullable();
+            $table->string('fn_number')->nullable();
             $table->string('kkt_registration_number')->nullable();
             $table->string('fiscal_attribute')->nullable();
             $table->string('fiscal_doc_number')->nullable();
