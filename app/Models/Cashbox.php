@@ -90,6 +90,6 @@ class Cashbox
 
     public function checkStatus(Payment $payment)
     {
-        return $this->getClient()->get(self::API_VERSION . '/document/' . $payment->operation_id)->json();
+        return $this->getClient()->get(self::API_VERSION . '/document/' . $payment->operation_id);
     }
 }

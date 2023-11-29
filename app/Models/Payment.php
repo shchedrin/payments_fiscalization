@@ -33,6 +33,13 @@ class Payment extends Model
         'fiscal_status',
         'created_at',
         'updated_at',
+        'fiscal_number',
+        'shift_fiscal_number',
+        'receipt_date',
+        'fn_number',
+        'kkt_registration_number',
+        'fiscal_attribute',
+        'fiscal_doc_number'
     ];
 
     protected $dates = [
@@ -40,6 +47,7 @@ class Payment extends Model
         'updated_at',
         'pay_date_oracle',
         'cre_dttm',
+        'receipt_date'
     ];
 
     /**
