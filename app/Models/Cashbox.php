@@ -87,4 +87,9 @@ class Cashbox
         ]);
         return $response->json();
     }
+
+    public function checkStatus(Payment $payment)
+    {
+        return $this->getClient()->get(self::API_VERSION . '/document/' . $payment->operation_id)->json();
+    }
 }
