@@ -35,11 +35,11 @@ class PaymentsController extends Controller
             ->defaultSort('pay_date_oracle')
             ->allowedSorts([
                 'id', 'pay_event_id', 'account_id', 'amount', 'tender_source', 'tender_source_descr', 'filen_name',
-                'pay_date_oracle', 'fiscal_flag'
+                'pay_date_oracle', 'fiscal_flag', 'file_name'
             ])
             ->allowedFilters([
                 'id', 'pay_event_id', 'account_id', 'amount', 'tender_source', 'tender_source_descr', 'filen_name',
-                'pay_date_oracle', 'fiscal_flag', $globalSearch])
+                'pay_date_oracle', 'fiscal_flag', 'file_name', $globalSearch])
             ->paginate()
             ->withQueryString();
 
