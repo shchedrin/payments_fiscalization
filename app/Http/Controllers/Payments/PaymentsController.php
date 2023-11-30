@@ -48,15 +48,22 @@ class PaymentsController extends Controller
         ])->table(function (InertiaTable $table) {
             $table
 //            ->withGlobalSearch()
-            ->column('id', 'ID', searchable: true, sortable: true)
+//            ->column('id', 'ID', searchable: true, sortable: true)
             ->column('pay_event_id', 'Payment Event CC&B', searchable: true, sortable: true)
             ->column('account_id', 'Лицевой счет', searchable: true, sortable: true)
             ->column('amount', 'Сумма', searchable: true, sortable: true)
             ->column('tender_source', 'Тендер в CC&B', searchable: true, sortable: true)
             ->column('tender_source_descr', 'Описание тендера', searchable: true, sortable: true)
             ->column('file_name', 'Файл реестра', searchable: true, sortable: true)
-            ->column('pay_date_oracle', 'Дата платежа', sortable: true)
+            ->column('pay_date_oracle', 'Дата платежа', searchable: true, sortable: true)
             ->column('fiscal_flag', 'Загружен в ФНС', searchable: true, sortable: true)
+            ->column('fiscal_number', '№ Чека', searchable: true, sortable: true)
+            ->column('shift_fiscal_number', 'Смена', searchable: true, sortable: true)
+            ->column('receipt_date', 'Дата чека', searchable: true, sortable: true)
+            ->column('fn_number', '№ ФН', searchable: true, sortable: true)
+            ->column('kkt_registration_number', '№ ККТ', searchable: true, sortable: true)
+            ->column('fiscal_attribute', 'ФПД', searchable: true, sortable: true)
+            ->column('fiscal_doc_number', '№ ФД', searchable: true, sortable: true)
             ->selectFilter(key: 'tender_source', label: 'Тендер в CC&B', options: [
                 'ZPLAT_L' => 'Зенит ЛЭСК',
                 'VTB24_L' => 'ВТБ ЛЭСК',
