@@ -18,16 +18,14 @@ class CheckPaymentStatus implements ShouldQueue
 
     public $timeout = 10;
 
-    protected $payment;
-
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Payment $payment)
+    public function __construct()
     {
-        $this->payment = $payment;
+
     }
 
     /**

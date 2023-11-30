@@ -19,7 +19,7 @@ class Kernel extends ConsoleKernel
     {
         if (config('app.env') == 'production') {
             $schedule->job(new ImportFiscalPayments)->daily();
-            $schedule->job(new CheckPaymentStatus())->hourly();
+            $schedule->job(new CheckPaymentStatus)->hourly();
             $schedule->command('horizon:snapshot')->everyFiveMinutes();
         }
     }
