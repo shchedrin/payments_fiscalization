@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class CheckPaymentStatus implements ShouldQueue
 {
@@ -57,6 +58,8 @@ class CheckPaymentStatus implements ShouldQueue
                     $payment->kkt_registration_number = $fiscalization['kkt_registration_number'];
                     $payment->fiscal_attribute = $fiscalization['fiscal_attribute'];
                     $payment->fiscal_doc_number = $fiscalization['fiscal_doc_number'];
+
+                    Log::info('CheckPaymentStatus', ['payment' => $payment]);
 
                     $payment->save();
                 }
