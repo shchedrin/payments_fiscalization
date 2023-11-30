@@ -4,6 +4,17 @@ import { Head } from '@inertiajs/inertia-vue3';
 import { Table } from "@protonemedia/inertiajs-tables-laravel-query-builder";
 
 defineProps(["payments"])
+export default
+{
+    name: "Dashboard",
+    methods:
+        {
+            export: function (queryBuilderString)
+            {
+                console.log('queryBuilderString: ' + queryBuilderString)
+            },
+        }
+}
 </script>
 
 <template>
@@ -21,7 +32,7 @@ defineProps(["payments"])
                 <template v-slot:tableFilter="slotProps">
                     <input
                         placeholder="Custom Global Search Component..."
-                        @input="alert(queryBuilderString)"
+                        @input="this.export(queryBuilderString)"
                     />
                 </template>
             </Table>
