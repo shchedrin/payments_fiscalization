@@ -45,6 +45,7 @@ class CheckPaymentStatus implements ShouldQueue
 
             if ($response->ok()) {
                 $status = $response->json();
+                Log::info('CheckPaymentStatus', ['response' => $status]);
 
                 if ($status['operation']['status'] == 'complete') {
                     $fiscalization = $status['fiscalization'];
@@ -63,6 +64,8 @@ class CheckPaymentStatus implements ShouldQueue
 
                     $payment->save();
                 }
+            } else {
+                Log::error('CheckPaymentStatus.error', ['response' => $response]);
             }
         }
     }
