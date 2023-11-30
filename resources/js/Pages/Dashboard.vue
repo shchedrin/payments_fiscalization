@@ -17,8 +17,14 @@ defineProps(["payments"])
         <div class="py-12">
             <Table
                 :resource="payments"
-                :striped="true"
-            />
+                :striped="true">
+                <template v-slot:tableFilter="slotProps">
+                    <input
+                        placeholder="Custom Global Search Component..."
+                        @input="slotProps.onChange($event.target.value)"
+                    />
+                </template>
+            </Table>
         </div>
     </AuthenticatedLayout>
 </template>
