@@ -47,7 +47,6 @@ class CheckPaymentStatus implements ShouldQueue
 
             if ($response->ok()) {
                 $status = $response->json();
-
                 if ($status['operation']['status'] == 'complete') {
                     $fiscalization = $status['fiscalization'];
 

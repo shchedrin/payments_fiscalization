@@ -39,7 +39,7 @@ class PaymentsController extends Controller
                 'fn_number', 'kkt_registration_number', 'fiscal_attribute', 'fiscal_doc_number'
             ])
             ->allowedFilters([
-                'id', 'pay_event_id', 'account_id', 'amount', 'tender_source', 'tender_source_descr', 'filen_name',
+                'id', 'pay_event_id', 'account_id', AllowedFilter::exact('amount'), 'tender_source', 'tender_source_descr', 'filen_name',
                 'pay_date_oracle', 'fiscal_flag', 'file_name', 'fiscal_number', 'shift_fiscal_number', 'receipt_date',
                 'fn_number', 'kkt_registration_number', 'fiscal_attribute', 'fiscal_doc_number', $globalSearch
             ])
