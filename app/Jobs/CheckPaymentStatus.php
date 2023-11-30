@@ -16,7 +16,7 @@ class CheckPaymentStatus implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $timeout = 10;
+    public $timeout = 3500;
 
     /**
      * Create a new job instance.
