@@ -36,7 +36,7 @@ class CheckPaymentStatus implements ShouldQueue
     public function handle()
     {
         $payments = Payment::where('fiscal_flag', false)
-            ->where('created_at', '>=', Carbon::now()->subHours(1)->toDateTimeString())->get();
+            ->where('created_at', '<=', Carbon::now()->subHours(1)->toDateTimeString())->get();
 
         foreach($payments as $payment) {
             $cashbox = new Cashbox($this->payment->cis_division);
