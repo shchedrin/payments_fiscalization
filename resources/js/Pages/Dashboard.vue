@@ -21,7 +21,7 @@ defineProps(["payments"])
                 <template v-slot:tableFilter="slotProps">
                     <input
                         placeholder="Custom Global Search Component..."
-                        @input="slotProps.onChange($event.target.value)"
+                        @input="console.log(payments)"
                     />
                 </template>
             </Table>
