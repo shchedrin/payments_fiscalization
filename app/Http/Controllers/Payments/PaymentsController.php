@@ -32,7 +32,7 @@ class PaymentsController extends Controller
         });
 
         $payments = QueryBuilder::for(Payment::class)
-            ->defaultSort('pay_date_oracle')
+            ->defaultSort('receipt_date')
             ->allowedSorts([
                 'id', 'pay_event_id', 'account_id', 'amount', 'tender_source', 'tender_source_descr', 'filen_name',
                 'pay_date_oracle', 'fiscal_flag', 'file_name', 'fiscal_number', 'shift_fiscal_number', 'receipt_date',
@@ -61,12 +61,12 @@ class PaymentsController extends Controller
             ->column('pay_date_oracle', 'Дата платежа', searchable: true, sortable: true)
             ->column('fiscal_flag', 'Загружен в ФНС', searchable: true, sortable: true)
             ->column('fiscal_number', '№ Чека', searchable: true, sortable: true)
-            ->column('shift_fiscal_number', 'Смена', searchable: true, sortable: true)
+//            ->column('shift_fiscal_number', 'Смена', searchable: true, sortable: true)
             ->column('receipt_date', 'Дата чека', searchable: true, sortable: true)
-            ->column('fn_number', '№ ФН', searchable: true, sortable: true)
+//            ->column('fn_number', '№ ФН', searchable: true, sortable: true)
             ->column('kkt_registration_number', '№ ККТ', searchable: true, sortable: true)
-            ->column('fiscal_attribute', 'ФПД', searchable: true, sortable: true)
-            ->column('fiscal_doc_number', '№ ФД', searchable: true, sortable: true)
+//            ->column('fiscal_attribute', 'ФПД', searchable: true, sortable: true)
+//            ->column('fiscal_doc_number', '№ ФД', searchable: true, sortable: true)
             ->selectFilter(key: 'tender_source', label: 'Тендер в CC&B', options: [
                 'ZPLAT_L' => 'Зенит ЛЭСК',
                 'VTB24_L' => 'ВТБ ЛЭСК',
