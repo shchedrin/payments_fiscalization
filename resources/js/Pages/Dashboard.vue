@@ -18,9 +18,6 @@ defineProps(["payments"])
             <Table
                 :resource="payments"
                 :striped="true">
-                <template v-slot:tableFilter="slotProps">
-                    <a :href="'export/query=' + $route.query" :class="{ 'btn btn-secondary btn-sm': true }">Export to Excel</a>
-                </template>
             </Table>
         </div>
     </AuthenticatedLayout>
