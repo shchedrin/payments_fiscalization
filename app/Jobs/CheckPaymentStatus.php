@@ -39,8 +39,8 @@ class CheckPaymentStatus implements ShouldQueue
             ->where('created_at', '<=', Carbon::now()->subHours(1)->toDateTimeString())->get();
 
         foreach($payments as $payment) {
-            $cashbox = new Cashbox($this->payment->cis_division);
-            $response = $cashbox->checkStatus($this->payment);
+            $cashbox = new Cashbox($payment->cis_division);
+            $response = $cashbox->checkStatus($payment);
 
             if ($response->ok()) {
                 $status = $response->json();
@@ -48,17 +48,17 @@ class CheckPaymentStatus implements ShouldQueue
                 if ($status['operation']['status'] == 'complete') {
                     $fiscalization = $status['fiscalization'];
 
-                    $this->payment->fiscal_flag = true;
+                    $payment->fiscal_flag = true;
 
-                    $this->payment->fiscal_number = $fiscalization['fiscal_number'];
-                    $this->payment->shift_fiscal_number = $fiscalization['shift_fiscal_number'];
+                    $payment->fiscal_number = $fiscalization['fiscal_number'];
+                    $payment->shift_fiscal_number = $fiscalization['shift_fiscal_number'];
                     $payment->receipt_date = Carbon::createFromTimestampUTC($fiscalization['receipt_date'])->format('Y-m-d H:i:s');
-                    $this->payment->fn_number = $fiscalization['fn_number'];
-                    $this->payment->kkt_registration_number = $fiscalization['kkt_registration_number'];
-                    $this->payment->fiscal_attribute = $fiscalization['fiscal_attribute'];
-                    $this->payment->fiscal_doc_number = $fiscalization['fiscal_doc_number'];
+                    $payment->fn_number = $fiscalization['fn_number'];
+                    $payment->kkt_registration_number = $fiscalization['kkt_registration_number'];
+                    $payment->fiscal_attribute = $fiscalization['fiscal_attribute'];
+                    $payment->fiscal_doc_number = $fiscalization['fiscal_doc_number'];
 
-                    $this->payment->save();
+                    $payment->save();
                 }
             }
         }
