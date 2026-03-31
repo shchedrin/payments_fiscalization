@@ -75,8 +75,8 @@ class Cashbox
                     'price' => floatval($payment->amount),
                     'quantity' => 1,
                     'sum' => floatval($payment->amount),
-                    'tax' => 'vat20',
-                    'tax_sum' => round($payment->amount / 120 * 20, 2),
+                    'tax' => 'vat22',
+                    'tax_sum' => round($payment->amount / 120 * 22, 2),
                     'sign_method_calculation' => 'full_payment',
                     'sign_calculation_object' => 'commodity',
                 ]
